@@ -1,50 +1,45 @@
 <?php
 
-use App\BankAccount;
-use App\Exception\InvalidAmountException;
-use App\Exception\InsufficientFundsException;
+// Пример использования и обработка исключений
+try {
+    echo "Тест 1: Создание счета с начальным балансом 500\n";
+    $account = new BankAccount(500.0);
+    echo "Баланс: " . $account->getBalance() . "\n";
 
-function runTests()
-{
-    try {
-        // Тест 1: Отрицательный начальный баланс
-        $acc1 = new BankAccount(-100);
-        echo "Тест 1 провален\n";
-    } catch (InvalidAmountException $e) {
-        echo "Тест 1 пройден: " . $e->getMessage() . "\n";
-    }
+    echo "\nТест 2: Пополнение на 200\n";
+    $account->deposit(200);
+    echo "Баланс: " . $account->getBalance() . "\n";
 
-    try {
-        // Тест 2: Внесение нуля
-        $acc2 = new BankAccount(100);
-        $acc2->deposit(0);
-        echo "Тест 2 провален\n";
-    } catch (InvalidAmountException $e) {
-        echo "Тест 2 пройден: " . $e->getMessage() . "\n";
-    }
+    echo "\nТест 3: Снятие 100\n";
+    $account->withdraw(100);
+    echo "Баланс: " . $account->getBalance() . "\n";
 
-    try {
-        // Тест 3: Снятие больше баланса
-        $acc3 = new BankAccount(100);
-        $acc3->withdraw(150);
-        echo "Тест 3 провален\n";
-    } catch (InsufficientFundsException $e) {
-        echo "Тест 3 пройден: " . $e->getMessage() . "\n";
-    }
+    echo "\nТест 4: Снятие 600 (ожидается InsufficientFundsException)\n";
+    $account->withdraw(600);
+} catch (InsufficientFundsException $e) {
+    echo "Ошибка: " . $e->getMessage() . "\n";
+} catch (InvalidAmountException $e) {
+    echo "Ошибка: " . $e->getMessage() . "\n";
 
-    try {
-        // Тест 4: Успешное снятие
-        $acc4 = new BankAccount(500);
-        $acc4->withdraw(200);
-        if ($acc4->getBalance() == 300) {
-            echo "Тест 4 пройден\n";
-        } else {
-            echo "Тест 4 провален\n";
-        }
-    } catch (Exception $e) {
-        echo "Тест 4 провален: " . $e->getMessage() . "\n";
-    }
 }
 
-echo "\n=== Тестирование ===\n";
-runTests();
+echo "\nТест 5: Счет с отрицательным начальным балансом (ожидается InvalidAmountException)\n";
+try {
+    $badAccount = new BankAccount(-100);
+} catch (InvalidAmountException $e) {
+    echo "Ошибка: " . $e->getMessage() . "\n";
+}
+
+echo "\nТест 6: Попытка внести ноль (ожидается InvalidAmountException)\n";
+try {
+    $account->deposit(0);
+} catch (InvalidAmountException $e) {
+    echo "Ошибка: " . $e->getMessage() . "\n";
+}
+
+echo "\nТест 7: Попытка снять отрицательную сумму (ожидается InvalidAmountException)\n";
+try {
+    $account->withdraw(-50);
+} catch (InvalidAmountException $e) {
+    echo "Ошибка: " . $e->getMessage() . "\n";
+}
